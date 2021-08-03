@@ -107,8 +107,7 @@ map.on('load', function () {
     // the location of the feature, with
     // description HTML from its properties.
     map.on('click', 'unclustered-point', function (e) {
-        console.log("unclustered click")
-        const {popUpMarkap} = e.features[0].properties
+        const {popupText} = e.features[0].properties
         const coordinates = e.features[0].geometry.coordinates.slice();
         
 
@@ -121,12 +120,11 @@ map.on('load', function () {
 
         new mapboxgl.Popup()
             .setLngLat(coordinates)
-            .setHTML(popUpMarkap)
+            .setHTML(popupText)
             .addTo(map);
     });
 
     map.on('mouseenter', 'clusters', function () {
-        console.log("mouse entering")
         map.getCanvas().style.cursor = 'pointer';
     });
     map.on('mouseleave', 'clusters', function () {

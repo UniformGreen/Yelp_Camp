@@ -7,8 +7,8 @@ const { cloudinary } = require('../cloudinary');
 // SHOW CAMPGROUNDS ROUTE
 
 module.exports.index = async (req, res) => {
-    const campgrounds = await Campground.find({});
-    res.render('campgrounds/index', { campgrounds })
+        const campgrounds = await Campground.find({}).populate('popupText')
+        res.render('campgrounds/index', { campgrounds })
 }
 
 // Add campground system route. !!pagina de adaugare (new) trebuie sa fie mereu inaintea paginii de afisare cu ID
@@ -26,12 +26,12 @@ module.exports.createCampground = async (req, res, next) => {
     }).send()
     const campground = new Campground(req.body.campground); // new campground
     campground.geometry = geoData.body.features[0].geometry;
-        campground.images = req.files.map(f => ({ url: f.path, filename: f.filename })) // takes image path and filaname from multer and sets it as images to save into mongo
-        campground.author = req.user._id;
-        await campground.save(); // upload campground to database
-        req.flash('success', 'Successfully made a new campground!') // Mesaj de confirmare
-        res.redirect(`/campgrounds/${campground._id}`); // redirect to details page
-    }
+    campground.images = req.files.map(f => ({ url: f.path, filename: f.filename })) // takes image path and filaname from multer and sets it as images to save into mongo
+    campground.author = req.user._id;
+    await campground.save(); // upload campground to database
+    req.flash('success', 'Successfully made a new campground!') // Mesaj de confirmare
+    res.redirect(`/campgrounds/${campground._id}`); // redirect to details page
+}
 
 // SHOW CAMPGROUNDS
 

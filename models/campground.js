@@ -3,6 +3,7 @@
 const mongoose = require('mongoose'); // adaugare mongoose
 const Review = require('./review'); // adaugare review pentru as putea fi folosit in middleware de stergere
 const Schema = mongoose.Schema; // constanta ce va fi folosita in relatii
+const mongoosePaginate = require('mongoose-paginate-v2')
 
 const ImageSchema = new Schema({
     url: String,
@@ -70,5 +71,7 @@ CampgroundSchema.post('findOneAndDelete', async function (doc) {
         })
     }
 })
+
+CampgroundSchema.plugin(mongoosePaginate)
 
 module.exports = mongoose.model('Campground', CampgroundSchema); // export model pentru a putea fi folosit in alte fisiere
