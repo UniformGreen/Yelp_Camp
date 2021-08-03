@@ -3,7 +3,8 @@
 const mongoose = require('mongoose'); // adaugare mongoose
 const Review = require('./review'); // adaugare review pentru as putea fi folosit in middleware de stergere
 const Schema = mongoose.Schema; // constanta ce va fi folosita in relatii
-const mongoosePaginate = require('mongoose-paginate-v2')
+const mongoosePaginate = require('mongoose-paginate-v2');
+const { date } = require('joi');
 
 const ImageSchema = new Schema({
     url: String,
@@ -55,11 +56,12 @@ const CampgroundSchema = new Schema({ // schema baza de date
             ref: 'Review'
         }
     ]
-}, options);
+}, {timestamps: true}, options);
 
-CampgroundSchema.virtual('properties.popUpMarkap').get(function() {
+CampgroundSchema.virtual('properties.popupText').get(function() {
     return `<strong><a href = "/campgrounds/${this._id}">${this.title}</a><strong>`
 })
+
 
 // Middleware pentru a sterge review-urile atunci cand campground-ul este sters
 CampgroundSchema.post('findOneAndDelete', async function (doc) {

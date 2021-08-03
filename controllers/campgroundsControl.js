@@ -3,12 +3,13 @@ const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 const { cloudinary } = require('../cloudinary');
+const { getLastUpdated } = require('../utils/functions')
 
 // SHOW CAMPGROUNDS ROUTE
 
 module.exports.index = async (req, res) => {
-        const campgrounds = await Campground.find({}).populate('popupText')
-        res.render('campgrounds/index', { campgrounds })
+    const campgrounds = await Campground.find({}).populate('popupText')
+    res.render('campgrounds/index', { campgrounds })
 }
 
 // Add campground system route. !!pagina de adaugare (new) trebuie sa fie mereu inaintea paginii de afisare cu ID
@@ -16,6 +17,7 @@ module.exports.index = async (req, res) => {
 module.exports.renderNewForm = (req, res) => {
     res.render('campgrounds/new');
 }
+
 
 // Create Campground
 
@@ -70,8 +72,20 @@ module.exports.saveCampground = async (req, res, next) => {
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground }); // .. pentru a updata tot ce e cu name = campground[] 
     const imgs = req.files.map(f => ({ url: f.path, filename: f.filename })) // takes image path and filaname from multer and sets it as images to save into mongo
     campground.images.push(...imgs)  // ... spreads the array
-    await campground.save()
+    const newLocation = req.body.location
+    console.log(newLocation)
 
+    // If Location was changed
+    if (newLocation !== campground.location) {
+        const geoData = await geocoder.forwardGeocode({
+            query: req.body.campground.location,
+            limit: 1
+        }).send()
+        campground.geometry = geoData.body.features[0].geometry;
+    }
+
+
+    await campground.save()
     // deleting images from MONGO
     if (req.body.deleteImages) {
         // deleting images from claudinary

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const cities = require('./cities'); // adaugare fisier sities pentru a putea fi vazut in acest fisier
 const { places, descriptors } = require('./seedHelpers') // adaugare places si descriptors din fisierul seedHelpers
 const Campground = require('../models/campground') // adaugare model pentru a putea creea un nou campground
+const { getLastUpdated } = require('../utils/functions')
 
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
@@ -9,7 +10,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 
-mongoose.connect(dbUrl, { // conectare la baza de date
+mongoose.connect('mongodb://localhost:27017/yelp-camp', { // conectare la baza de date
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true
@@ -50,7 +51,8 @@ const seedDB = async () => {
                     cities[random1000].latitude
                 ],
                 "type": "Point"
-            }
+            },
+            createdAt: Date.now()
         })
         await camp.save();
     }
