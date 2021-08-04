@@ -3,13 +3,55 @@ const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 const { cloudinary } = require('../cloudinary');
-const { getLastUpdated } = require('../utils/functions')
 
 // SHOW CAMPGROUNDS ROUTE
 
 module.exports.index = async (req, res) => {
-    const campgrounds = await Campground.find({}).populate('popupText')
-    res.render('campgrounds/index', { campgrounds })
+    
+
+    let currentPage = Number(req.query.page);
+    console.log({
+        currentPage
+    });
+
+    if (!currentPage || currentPage < 1)
+    // if client req /index w/o ?page 
+    {
+        currentPage = 1;
+        // get campgrounds from the database
+        req.session.campgrounds = await Campground.find({}).limit(1000);
+
+        // Initialize Pagination
+        let len = (req.session.campgrounds).length;
+        req.session.pagination = {
+            totalItems: len, // total # of campgrounds
+            itemsPerPage: 6,
+            totalPages: Math.ceil(len / 6) // total # of pages
+        }
+    }
+
+    if (!req.session.pagination || !req.session.campgrounds) res.redirect('campgrounds/');
+
+    
+
+    const {
+        itemsPerPage,
+        totalItems,
+        totalPages
+    } = req.session.pagination;
+    let start = (currentPage - 1) * itemsPerPage;
+    let end = currentPage * itemsPerPage;
+    if (end > totalItems) end = totalItems;
+
+    const campgrounds = (req.session.campgrounds);
+    res.render('campgrounds/', {
+        campgrounds,
+        totalPages,
+        currentPage,
+        start,
+        end
+    });
+    
 }
 
 // Add campground system route. !!pagina de adaugare (new) trebuie sa fie mereu inaintea paginii de afisare cu ID

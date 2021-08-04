@@ -1,45 +1,72 @@
+
+<div id="cluster-map"></div>
+
+
 <% layout('layout/boilerplate') %>
-    <div id="cluster-map"></div>
-    <h1 class="mb-3 mt-3">All Campgrounds</h1>
-    <div class="container">
-        <!-- afisare  campground-uri pe pagina -->
-        <% for (let campground of campgrounds) {%>
-            <div class="card mb-3">
-                <div class="row">
-                    <div class="col-md-4">
-                        <% if(campground.images.length) { %>
-                            <img class="img-fluid imgThumbnail" alt="" src="<%= campground.images[0].url %> ">
-                            <% } else {%>
-                                <img class="img-fluid" alt=""
-                                    src="https://res.cloudinary.com/cgpetraru/image/upload/h_250,w_415/v1627497903/YelpCamp/ae8ac2fa217d23aadcc913989fcc34a2_ngyy7q.png">
-                                <% } %>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                <%= campground.title %>
-                            </h5>
-                            <!-- <h5 class="card-title">
-                            <%= campground.properties.popupText %>
-                        </h5> -->
-                            <p class="card-text">
-                                <%= campground.description %>
-                            </p>
-                            <p class="card-text">
-                                <small class="text-muted">
-                                    <%= campground.location %>
-                                </small>
-                            </p>
-                            <a href="/campgrounds/<%= campground._id %> " class="btn btn-primary">View <%=
-                                    campground.title %> </a>
+    
+        <h1 class="mb-3 mt-3">All Campgrounds</h1>
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+            <li class="page-item <%= (currentPage == 1) ? 'disabled' : '' %>">
+              <a class="page-link" href="/campgrounds?page=<%= currentPage - 1  %> " tabindex="-1">Previous</a>
+            </li>
+            <% for (let i = 1; i <= totalPages; i++) { %> 
+            <li class="page-item <%= (i === currentPage) ? 'active' : '' %> "><a class="page-link" href="/campgrounds?page=<%= i %> "><%= i %> </a></li>
+            <% } %> 
+            <li class="page-item <%= (currentPage >= totalPages) ? 'disabled' : '' %> ">
+              <a class="page-link" href="/campgrounds?page=<%= currentPage + 1 %> ">Next</a>
+            </li>
+          </ul>
+        </nav>
+            <div class="row row-cols-1 row-cols-md-3 g-4 mb-3">
+                <% for (let campground of campgrounds.slice(start, end)) {%>
+                <div class="col">
+                  <div class="card h-100">
+                    <% if(campground.images.length) { %>
+                      <a href="/campgrounds/<%= campground._id %>">
+                        <img class="card-img-top img-fluid imgThumbnail" alt="" src="<%= campground.images[0].url %> ">
+                        <% } else {%>
+                            <img class="card-img-top img-fluid" alt=""
+                                src="https://res.cloudinary.com/cgpetraru/image/upload/v1628088493/YelpCamp/unnamed_pzoz6d.png">
+                            <% } %>
+                          </a>
+                    <div class="card-body">
+                      <h5 class="card-title"><%= campground.title %></h5>
+                      <p class="card-text mb-1"><%= campground.description.substring(0, 20)%>...</p>
+                      <p class="card-text">
+                          <small class="text-muted">
+                            <%= campground.location %>
+                          </small>
+                        </p>
+                        <div class="text-center">
+                            <a href="/campgrounds/<%= campground._id %> " class="card-link btn btn-primary">View <%=
+                                campground.title %> </a>
                         </div>
+                        
                     </div>
+                  </div>
                 </div>
+                <% } %>
+                
             </div>
-            <% } %>
-    </div>
+            
+            <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-center">
+                <li class="page-item <%= (currentPage == 1) ? 'disabled' : '' %>">
+                  <a class="page-link" href="/campgrounds?page=<%= currentPage - 1  %> " tabindex="-1">Previous</a>
+                </li>
+                <% for (let i = 1; i <= totalPages; i++) { %> 
+                <li class="page-item <%= (i === currentPage) ? 'active' : '' %> "><a class="page-link" href="/campgrounds?page=<%= i %> "><%= i %> </a></li>
+                <% } %> 
+                <li class="page-item <%= (currentPage >= totalPages) ? 'disabled' : '' %> ">
+                  <a class="page-link" href="/campgrounds?page=<%= currentPage + 1 %> ">Next</a>
+                </li>
+              </ul>
+            </nav>
+            
     <script>
         const mapToken = '<%-process.env.MAPBOX_TOKEN%>'
         const campgrounds = { features: <%- JSON.stringify(campgrounds) %>}
     </script>
     <script src="/javascripts/clusterMap.js"></script>
+

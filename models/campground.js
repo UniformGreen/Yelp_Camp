@@ -19,7 +19,7 @@ ImageSchema.virtual('carousel').get(function() {
 })
 // carousel photos size
 ImageSchema.virtual('thumbnail').get(function () {
-    return this.url.replace('/upload', '/upload/w_200');
+    return this.url.replace('/upload', '/upload/h_150,w_200');
 });
 
 // index thumbnail size
@@ -27,7 +27,7 @@ ImageSchema.virtual('indexThumbnail').get(function() {
     return this.url.replace('/upload', '/upload/h_250,w_415')
 })
 
-const options = { toJSON: {virtuals: true} } // MONGOOSE does not support virtuals by default.
+const options = { toJSON: {virtuals: true}, timestamps: true } // MONGOOSE does not support virtuals by default.
 
 const CampgroundSchema = new Schema({ // schema baza de date
     title: String,
@@ -56,10 +56,10 @@ const CampgroundSchema = new Schema({ // schema baza de date
             ref: 'Review'
         }
     ]
-}, {timestamps: true}, options);
+}, options);
 
-CampgroundSchema.virtual('properties.popupText').get(function() {
-    return `<strong><a href = "/campgrounds/${this._id}">${this.title}</a><strong>`
+CampgroundSchema.virtual('properties.popUpMarkup').get(function() {
+    return `<strong><a href=/campgrounds/${this._id}>${this.title}</a></strong>`
 })
 
 
@@ -74,6 +74,5 @@ CampgroundSchema.post('findOneAndDelete', async function (doc) {
     }
 })
 
-CampgroundSchema.plugin(mongoosePaginate)
 
 module.exports = mongoose.model('Campground', CampgroundSchema); // export model pentru a putea fi folosit in alte fisiere

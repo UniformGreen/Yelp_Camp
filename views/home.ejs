@@ -9,9 +9,14 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
         integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
     <link rel="stylesheet" href="/stylesheets/home.css">
+    <link rel="stylesheet" href="/stylesheets/load.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body class="d-flex text-center text-white bg-dark">
+    <div class="loader-wrapper">
+        <span class="loader"><span class="loader-inner"></span></span>
+    </div>
     <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
         <header class="mb-auto">
             <div>
@@ -42,6 +47,18 @@
 
 
     </div>
+
+    <script>
+        $(window).on("load", function () {
+            $(".loader-wrapper").fadeOut("slow");
+        });
+    </script>
+    <script>
+        const loadingSquare = document.querySelector('.loader-wrapper');
+        document.body.onbeforeunload = () => {
+            loadingSquare.style.display = "flex";
+        };
+    </script>
 
 
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
